@@ -1,0 +1,5 @@
+#ignore fie
+logs
+.gradle
+build
+.idea

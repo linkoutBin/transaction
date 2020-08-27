@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:property-placeholder location="classpath:db.properties" />
+
+  <!-- 非连接池配置数据源 -->
+  <bean id="dataSource"
+    class="org.springframework.jdbc.datasource.DriverManagerDataSource" lazy-init="true">
+    <property name="driverClassName" value="${spring.jdbc.driverClassName}"/>
+    <property name="url" value="${spring.jdbc.url}"/>
+    <property name="username" value="${spring.jdbc.username}"/>
+    <property name="password" value="${spring.jdbc.password}"/>
+  </bean>
+
+  <!-- DBCP连接池配置数据源 -->
+  <bean id="dbcpDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" lazy-init="true">
+    <property name="driverClassName" value="${spring.jdbc.driverClassName}"/>
+    <property name="url" value="${spring.jdbc.url}"/>
+    <property name="username" value="${spring.jdbc.username}"/>
+    <property name="password" value="${spring.jdbc.password}"/>
+  </bean>
+
+  <!-- C3P0连接池配置 -->
+  <bean id="c3p0DataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" lazy-init="true">
+    <property name="driverClass" value="${spring.jdbc.driverClassName}"/>
+    <property name="jdbcUrl" value="${spring.jdbc.url}"/>
+    <property name="user" value="${spring.jdbc.username}"/>
+    <property name="password" value="${spring.jdbc.password}"/>
+  </bean>
+
+  <!-- 简单连接模版 -->
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" lazy-init="true">
+    <constructor-arg name="dataSource" ref="dataSource" />
+  </bean>
+
+  <!-- 非事务DAO -->
+  <bean id="commentJdbcTemplate" class="com.bin.spring.dao.CommentJdbcDAO" lazy-init="true">
+    <property name="jdbcTemplate" ref="jdbcTemplate"/>
+  </bean>
+
+  <!-- 带事务DAO -->
+  <bean id="commentTxDao" class="com.bin.spring.dao.CommentTxDao" lazy-init="true">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+
+  <!-- 连接池工具 -->
+  <bean id="connectionPool" class="com.bin.jdbc.connection.JDBCConnectionPoolUtil" lazy-init="true">
+    <constructor-arg name="dataSource" ref="c3p0DataSource" />
+  </bean>
+
+  <!-- 事务管理工具 -->
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" lazy-init="true">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+
+  <!-- MYBATIS CONFIGURATION -->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="commentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    <property name="mapperInterface" value="com.bin.mybatis.CommentMapper" />
+    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+  </bean>
+
+  <!-- test for implements FactoryBean -->
+  <bean id="binFactoryBean" class="com.bin.utils.BinFactoryBeanImpl" >
+  </bean>
+
+  <!-- test for xlock -->
+  <bean id="lockService" class="com.bin.xlock.service.impl.LockServiceImpl">
+
+  </bean>
+</beans>

@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+}
+
+description = "transaction demo"
+
+ext {
+    mysqlVersion = '8.0.16'
+    junitVersion = '4.12'
+    springVersion = '4.3.16.RELEASE'
+    dbcpVersion = '2.1.1'
+    c3p0Version = '0.9.5.2'
+    myBatisVersion = ''
+}
+
+wrapper {
+    gradleVersion = '6.3'
+    distributionUrl = distributionUrl.replace("all", "bin")
+}
+
+group 'com.bin'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+}
+
+dependencies {
+    testCompile "junit:junit:${junitVersion}"
+    compile "mysql:mysql-connector-java:${mysqlVersion}"
+    compile "org.springframework:spring-context:${springVersion}"
+    compile "org.springframework:spring-jdbc:${springVersion}"
+    compile 'org.mybatis:mybatis-spring:2.0.5'
+    compile 'org.mybatis:mybatis:3.4.6'
+    compile "org.apache.commons:commons-dbcp2:${dbcpVersion}"
+    compile 'com.mchange:c3p0:0.9.5.2'
+    compile 'com.alibaba:druid:1.1.10'
+    compile 'log4j:log4j:1.2.17'
+}
